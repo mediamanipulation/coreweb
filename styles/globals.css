@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { height: 100%; }
+body { @apply bg-slate-950 text-slate-200 antialiased; }
+a { @apply transition; }
+.btn-primary { @apply px-6 py-3 rounded bg-primary text-white hover:bg-primary/80; }
+.btn-outline { @apply px-6 py-3 rounded border border-primary text-primary hover:bg-primary/10; }
+.section { @apply py-16 md:py-24; }
+.card { @apply rounded-xl bg-slate-900/60 p-6 ring-1 ring-white/5 shadow; }
+.container { @apply mx-auto px-4 max-w-6xl; }
+.header-glass { @apply bg-slate-900/60 backdrop-blur supports-[backdrop-filter]:bg-slate-900/40; }
+.radial { background: radial-gradient(ellipse at center, rgba(104,119,255,.25), transparent 60%); }
