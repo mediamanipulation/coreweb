@@ -1,0 +1,1097 @@
+app\components\BrainFallback.jsx: |
+  "use client";
+  import * as THREE from "three";
+  import { useMemo, useRef } from "react";
+  import { useFrame } from "@react-three/fiber";
+  
+  export default function BrainFallback({ count = 6500, glowRef }) {
+    const pointsRef = useRef(null);
+  
+    const positions = useMemo(() => {
+      const arr = new Float32Array(count * 3);
+      for (let i = 0; i < count; i++) {
+        const base = 0.62, noise = Math.random() * 0.035;
+        const r = base + noise;
+        const theta = Math.acos(THREE.MathUtils.randFloatSpread(2));
+        const phi = THREE.MathUtils.randFloat(0, Math.PI * 2);
+        const x = r * Math.sin(theta) * Math.cos(phi);
+        const y = r * Math.cos(theta);
+        const z = r * Math.sin(theta) * Math.sin(phi);
+        arr.set([x, y, z], i * 3);
+      }
+      return arr;
+    }, [count]);
+  
+    useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+  
+    // Smooth sine pulse between ~0.45–0.65
+    const pulse = 0.55 + Math.sin(t * 0.6) * 0.10;
+  
+    if (pointsRef.current) {
+  
+      // ⏳ Extremely slow rotation
+      pointsRef.current.rotation.y += 0.000005;
+      pointsRef.current.rotation.x += 0.000002;
+  
+      // ✅ Pulse opacity
+      const mat = pointsRef.current.material;
+      if (mat) {
+        mat.opacity = pulse;      // <-- core pulsing line
+      }
+    }
+  });
+  
+    return (
+      <points ref={pointsRef}>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={positions.length / 3}
+            array={positions}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <pointsMaterial
+          size={0.013}
+          color="#A8B5FF"
+          transparent
+          opacity={0.65}
+          sizeAttenuation
+        />
+      </points>
+    );
+  }
+  
+
+app\components\BrainModel copy.jsx: |
+  "use client";
+  import { useEffect, useRef } from "react";
+  import { useGLTF } from "@react-three/drei";
+  import * as THREE from "three";
+  
+  export default function BrainModel(){
+    const group = useRef();
+    let gltf;
+    try { gltf = useGLTF("/brain.glb"); }
+    catch { gltf = null; }
+  
+    
+  
+    useEffect(()=>{
+      if(!group.current) return;
+      group.current.traverse((obj)=>{
+        if(obj.isMesh){
+          obj.material = new THREE.MeshStandardMaterial({
+            color: new THREE.Color("#7f8bff"),
+            metalness: 0.2,
+            roughness: 0.35,
+            emissive: new THREE.Color("#4a5bff"),
+            emissiveIntensity: 0.35
+          });
+        }
+      });
+    }, [gltf]);
+  
+    if(!gltf) return null;
+    return (
+      <group ref={group} scale={1.15} position={[0,-0.1,0]}>
+        <primitive object={gltf.scene} />
+        <primitive
+          object={gltf.scene.clone()}
+          onUpdate={(self)=>{
+            self.traverse((obj)=>{
+              if(obj.isMesh){
+                obj.material = new THREE.MeshBasicMaterial({
+                  color:"#b7c0ff", wireframe:true, transparent:true, opacity:0.12
+                });
+              }
+            });
+          }}
+        />
+      </group>
+    );
+  }
+  
+
+app\components\BrainModel.jsx: |
+  "use client";
+  import { useEffect, useRef } from "react";
+  import { useGLTF } from "@react-three/drei";
+  import * as THREE from "three";
+  
+  export default function BrainModel(){
+    const group = useRef();
+    let gltf;
+    try { gltf = useGLTF("/brain.glb"); }
+    catch { gltf = null; }
+  
+    
+  
+    useEffect(()=>{
+      if(!group.current) return;
+      group.current.traverse((obj)=>{
+        if(obj.isMesh){
+          obj.material = new THREE.MeshStandardMaterial({
+            color: new THREE.Color("#7f8bff"),
+            metalness: 0.2,
+            roughness: 0.35,
+            emissive: new THREE.Color("#4a5bff"),
+            emissiveIntensity: 0.35
+          });
+        }
+      });
+    }, [gltf]);
+  
+    if(!gltf) return null;
+    return (
+      <group ref={group} scale={1.15} position={[0,-0.1,0]}>
+        <primitive object={gltf.scene} />
+        <primitive
+          object={gltf.scene.clone()}
+          onUpdate={(self)=>{
+            self.traverse((obj)=>{
+              if(obj.isMesh){
+                obj.material = new THREE.MeshBasicMaterial({
+                  color:"#b7c0ff", wireframe:true, transparent:true, opacity:0.12
+                });
+              }
+            });
+          }}
+        />
+      </group>
+    );
+  }
+  
+
+app\components\BrainModel1.jsx: |
+  "use client";
+  import { useEffect, useRef } from "react";
+  import { useGLTF } from "@react-three/drei";
+  import * as THREE from "three";
+  
+  export default function BrainModel1(){
+    const group = useRef();
+    let gltf;
+    try { gltf = useGLTF("/brain.glb"); }
+    catch { gltf = null; }
+  
+    useEffect(()=>{
+      if(!group.current) return;
+      group.current.traverse((obj)=>{
+        if(obj.isMesh){
+          obj.material = new THREE.MeshStandardMaterial({
+            color: new THREE.Color("#7f8bff"),
+            metalness: 0.2,
+            roughness: 0.35,
+            emissive: new THREE.Color("#4a5bff"),
+            emissiveIntensity: 0.35
+          });
+        }
+      });
+    }, [gltf]);
+  
+    if(!gltf) return null;
+    return (
+      <group ref={group} scale={1.15} position={[0,-0.1,0]}>
+        <primitive object={gltf.scene} />
+        <primitive
+          object={gltf.scene.clone()}
+          onUpdate={(self)=>{
+            self.traverse((obj)=>{
+              if(obj.isMesh){
+                obj.material = new THREE.MeshBasicMaterial({
+                  color:"#b7c0ff", wireframe:true, transparent:true, opacity:0.12
+                });
+              }
+            });
+          }}
+        />
+      </group>
+    );
+  }
+  
+
+app\components\Features.jsx: |
+  export default function Features(){
+    return (
+      <section id="platform" className="section bg-slate-950">
+        <div className="container text-center">
+          <h2 className="text-3xl md:text-4xl font-semibold">Turning Research Into Action</h2>
+          <p className="mt-2 text-slate-400">Adaptive cognition, scalable compute, and aligned behavior.</p>
+  
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+            <div className="card">
+              <h3 className="text-xl font-semibold">n8n</h3>
+              <p className="mt-2 text-slate-400">Distributed systems inspired by biology.</p>
+            </div>
+            <div className="card">
+              <h3 className="text-xl font-semibold">DSPy</h3>
+              <p className="mt-2 text-slate-400">Stateful architectures that evolve over time.</p>
+            </div>
+            <div className="card">
+              <h3 className="text-xl font-semibold">Safety & Alignment</h3>
+              <p className="mt-2 text-slate-400">Formal guarantees for predictable outcomes.</p>
+            </div>
+            <div className="card">
+              <h3 className="text-xl font-semibold">n8n</h3>
+              <p className="mt-2 text-slate-400">Distributed systems inspired by biology.</p>
+            </div>
+            <div className="card">
+              <h3 className="text-xl font-semibold">DSPy</h3>
+              <p className="mt-2 text-slate-400">Stateful architectures that evolve over time.</p>
+            </div>
+            <div className="card">
+              <h3 className="text-xl font-semibold">Safety & Alignment</h3>
+              <p className="mt-2 text-slate-400">Formal guarantees for predictable outcomes.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+  
+
+app\components\Footer.jsx: |
+  export default function Footer(){
+    return (
+      <footer className="py-8 text-center text-slate-400 bg-slate-950">
+        <div className="container">
+          © 2025 NeuraCore • All rights reserved.
+        </div>
+      </footer>
+    );
+  }
+  
+
+app\components\git.txt: |
+  git init
+  git add .
+  git commit -m "first"
+  git branch -M main
+  git remote add origin coreflexweb 
+  git push -u origin main
+  
+
+app\components\Hero.jsx: |
+  "use client";
+  
+  import { useRef, useEffect, useState } from "react";
+  import NeuralBrainCanvas from "./NeuralBrainCanvas";
+  import NeuralParticles from "./Particles";
+  import gsap from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  
+  gsap.registerPlugin(ScrollTrigger);
+  
+  export default function Hero() {
+    const tiltRef = useRef(null);
+    const heroRef = useRef(null);
+    const containerRef = useRef(null);
+    const [loaded, setLoaded] = useState(false);
+    const [listening, setListening] = useState(false);
+  
+    // fade-in
+    useEffect(() => {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) { setLoaded(true); return; }
+  
+      gsap.fromTo(
+        heroRef.current,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 1.0, ease: "power2.out", onStart: () => setLoaded(true) }
+      );
+    }, []);
+  
+    // pointer → wobble
+    // useEffect(() => {
+    //   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    //   if (reduced) return;
+  
+    //   const move = (e) => {
+    //     if (!containerRef.current || !tiltRef.current) return;
+    //     const r = containerRef.current.getBoundingClientRect();
+    //     const x = (e.clientX - r.left) / r.width - 0.5;
+    //     const y = (e.clientY - r.top) / r.height - 0.5;
+    //     tiltRef.current.style.transform =
+    //       `perspective(1300px) rotateX(${y * -6}deg) rotateY(${x * 6}deg)`;
+  
+    //     window.dispatchEvent(new CustomEvent("orbPointer", { detail: { x, y } }));
+    //   };
+  
+    //   window.addEventListener("mousemove", move);
+    //   return () => window.removeEventListener("mousemove", move);
+    // }, []);
+  
+    // scroll scrub → orb scale
+    useEffect(() => {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) return;
+  
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "+=60%",
+          scrub: 0.4,
+        }
+      });
+  
+      tl.to({}, {
+        duration: 1,
+        onUpdate: () => {
+          const p = tl.progress();
+          window.dispatchEvent(new CustomEvent("orbScroll", { detail: { progress: p } }));
+        }
+      });
+  
+      return () => tl.scrollTrigger?.kill();
+    }, []);
+  
+    // CTA ripple
+    const ripple = (e) => {
+      const btn = e.currentTarget;
+      const circle = document.createElement("span");
+      const d = Math.max(btn.clientWidth, btn.clientHeight);
+      circle.style.width = circle.style.height = `${d}px`;
+  
+      const rect = btn.getBoundingClientRect();
+      circle.style.left = `${e.clientX - rect.left - d / 2}px`;
+      circle.style.top = `${e.clientY - rect.top - d / 2}px`;
+  
+      circle.className = "ripple";
+      btn.appendChild(circle);
+      setTimeout(() => circle.remove(), 600);
+  
+      window.dispatchEvent(new CustomEvent("orbCommand", { detail: { cmd: "burst" } }));
+    };
+  
+    return (
+  <section
+    id="platform"   // ✅ match your navbar href
+    ref={containerRef}
+    className="relative h-screen flex items-center overflow-hidden px-4"
+  >
+  
+        {/* BACKGROUND PARTICLES */}
+        <NeuralParticles />
+  
+        {/* ORB */}
+        <NeuralBrainCanvas />
+  
+        {/* HERO TEXT */}
+        <div
+          ref={tiltRef}
+          className="relative z-10 mx-auto container max-w-4xl"
+        >
+          <div ref={heroRef} className="p-2 md:p-4 text-center md:text-left transition-all duration-1000">
+            
+            <h1
+              className="
+                text-4xl md:text-6xl font-extrabold leading-tight
+                bg-gradient-to-r from-indigo-200 via-white to-indigo-200
+                bg-clip-text text-transparent
+                animate-gradientShift
+                glow-text
+              "
+            >
+              Where AI Meets Human Intelligence
+            </h1>
+  
+            <p className="mt-4 text-slate-300 text-base md:text-lg">
+              Transforming adaptive cognition into real-world capability.
+            </p>
+  
+            <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+              <button className="btn-primary glow-orb relative overflow-hidden" onClick={ripple}>
+                Get Started
+              </button>
+              <button className="btn-outline glow-orb relative overflow-hidden" onClick={ripple}>
+                Learn More
+              </button>
+            </div>
+  
+          </div>
+        </div>
+  
+        {/* subtle CSS embedded */}
+        <style jsx>{`
+          .glow-text {
+            text-shadow:
+              0 0 8px rgba(150, 180, 255, 0.35),
+              0 0 16px rgba(120, 150, 255, 0.22);
+          }
+  
+          @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+          .animate-gradientShift {
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease-in-out infinite;
+          }
+        `}</style>
+      </section>
+    );
+  }
+  
+
+app\components\NavBar.jsx: |
+  "use client";
+  import { useState } from "react";
+  import Link from "next/link";
+  
+  export default function NavBar() {
+    const [open, setOpen] = useState(false);
+  
+    return (
+      <header className="sticky top-0 z-50 header-glass">
+        <div className="container h-16 flex items-center justify-between">
+          <Link href="/" className="font-bold tracking-wider">
+            COREFLEXAI
+          </Link>
+  
+          <button
+            className="md:hidden text-xl"
+            onClick={() => setOpen(!open)}
+          >
+            ☰
+          </button>
+  
+          <nav
+            className={`md:flex gap-6 ${
+              open
+                ? "flex flex-col absolute left-0 right-0 top-16 p-4 bg-slate-900/95"
+                : "hidden"
+            } md:static`}
+          >
+            <Link href="#platform" className="text-slate-300 hover:text-white">
+              Platform
+            </Link>
+            <Link href="#solutions" className="text-slate-300 hover:text-white">
+              Solutions
+            </Link>
+            <Link href="#research" className="text-slate-300 hover:text-white">
+              Research
+            </Link>
+            <Link href="#contact" className="text-slate-300 hover:text-white">
+              Contact
+            </Link>
+          </nav>
+        </div>
+      </header>
+    );
+  }
+  
+
+app\components\NeuralBrainCanvas.jsx: |
+  "use client";
+  import { Canvas, useFrame } from "@react-three/fiber";
+  import { Suspense, useEffect, useRef, useState } from "react";
+  import { OrbitControls } from "@react-three/drei";
+  import { EffectComposer, Bloom } from "@react-three/postprocessing";
+  import BrainFallback from "./BrainFallback";
+  import * as THREE from "three";
+  
+  function HaloRings() {
+    const g1 = useRef(), g2 = useRef();
+    useFrame((_, dt) => {
+      if (g1.current) g1.current.rotation.z += dt * 0.25;
+      if (g2.current) g2.current.rotation.z -= dt * 0.18;
+    });
+    return (
+      <group>
+        <mesh ref={g1} rotation={[Math.PI/2, 0, 0]}>
+          <ringGeometry args={[0.85, 0.86, 256]} />
+          <meshBasicMaterial color="#8aa0ff" transparent opacity={0.25} blending={THREE.AdditiveBlending} />
+        </mesh>
+        <mesh ref={g2} rotation={[Math.PI/2, 0, Math.PI/3]}>
+          <ringGeometry args={[0.92, 0.93, 256]} />
+          <meshBasicMaterial color="#bcd0ff" transparent opacity={0.18} blending={THREE.AdditiveBlending} />
+        </mesh>
+      </group>
+    );
+  }
+  
+  function OrbController() {
+    const group = useRef();
+    const [paused, setPaused] = useState(false);
+    const glow = useRef(1);
+  
+    useFrame((_, dt) => {
+      if (!group.current || paused) return;
+      group.current.rotation.y += dt * 0.2;
+    });
+  
+    useEffect(() => {
+      const onCmd = (e) => {
+        const { cmd } = e.detail || {};
+        if (cmd === "freeze") setPaused(true);
+        if (cmd === "resume") setPaused(false);
+        if (cmd === "brighten") glow.current = 1.6;
+        if (cmd === "dim") glow.current = 0.7;
+        if (cmd === "burst") {
+          glow.current = 2.0;
+          setTimeout(() => (glow.current = 1.2), 500);
+        }
+      };
+      const onScroll = (e) => {
+        const p = e.detail?.progress ?? 0;
+        if (group.current) {
+          group.current.scale.setScalar(1 + p * 0.08);
+          group.current.position.y = -p * 0.08;
+        }
+      };
+      const onPointer = (e) => {
+        const x = e.detail?.x ?? 0, y = e.detail?.y ?? 0;
+        if (group.current) {
+          group.current.rotation.x = y * 0.8;
+          group.current.rotation.z = x * 0.8;
+        }
+      };
+  
+      window.addEventListener("orbCommand", onCmd);
+      window.addEventListener("orbScroll", onScroll);
+      window.addEventListener("orbPointer", onPointer);
+      return () => {
+        window.removeEventListener("orbCommand", onCmd);
+        window.removeEventListener("orbScroll", onScroll);
+        window.removeEventListener("orbPointer", onPointer);
+      };
+    }, []);
+  
+    // pass glow intensity down via context-like prop
+    return <group ref={group}><BrainFallback glowRef={glow} /><HaloRings /></group>;
+  }
+  
+  export default function NeuralBrainCanvas() {
+    return (
+      <div className="absolute inset-0 -z-10 w-full h-full">
+        <Canvas camera={{ position: [0, 0, 2.3], fov: 40 }} gl={{ antialias: true, alpha: true }}>
+          <Suspense fallback={null}>
+            <ambientLight intensity={0.25} />
+            <directionalLight position={[3,4,5]} intensity={1.2} />
+            <OrbController />
+            <EffectComposer>
+              <Bloom intensity={1.15} luminanceThreshold={0.1} luminanceSmoothing={0.85} mipmapBlur />
+            </EffectComposer>
+            <OrbitControls enablePan={false} enableZoom={false} enableRotate={false} />
+          </Suspense>
+        </Canvas>
+        {/* subtle rim light backdrop */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(125,146,255,0.18),transparent_70%)] mix-blend-screen" />
+      </div>
+    );
+  }
+  
+
+app\components\Particles.jsx: |
+  "use client";
+  import { useCallback, useEffect, useMemo, useState } from "react";
+  import Particles from "react-tsparticles";
+  import { loadFull } from "tsparticles";
+  
+  export default function NeuralParticles() {
+    const [reduced, setReduced] = useState(false);
+    useEffect(() => {
+      const q = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const set = () => setReduced(q.matches);
+      set(); q.addEventListener?.("change", set);
+      return () => q.removeEventListener?.("change", set);
+    }, []);
+  
+    const particlesInit = useCallback(async (engine) => { await loadFull(engine); }, []);
+  
+    const options = useMemo(() => ({
+      fullScreen: { enable: false },
+      background: { color: "transparent" },
+      fpsLimit: reduced ? 30 : 60,
+      particles: {
+        number: { value: reduced ? 80 : 140, density: { enable: true, area: 900 } },
+        size: { value: 4 },
+        color: { value: "#8ca8ff" },
+        opacity: { value: 0.35 },
+        links: {
+          enable: true, distance: 140, color: "#8ca8ff",
+          opacity: 0.22, width: 1
+        },
+        move: { enable: true, speed: reduced ? 0.2 : 0.4, random: false, straight: false }
+      },
+      interactivity: {
+        events: {
+          onHover: { enable: !reduced, mode: ["attract"] },
+          onClick: { enable: false }
+        },
+        modes: {
+          attract: { distance: 180, duration: 0.2, speed: 1 }
+        }
+      },
+      detectRetina: true
+    }), [reduced]);
+  
+    return (
+      <Particles id="tsparticles" init={particlesInit} options={options}
+        className="absolute inset-0 -z-20 w-full h-full" />
+    );
+  }
+  
+
+app\components\ResearchPanel.jsx: |
+  export default function ResearchPanel(){
+    return (
+      <>
+      <section className="w-full py-24 bg-slate-900">
+    <div className="container mx-auto px-6">
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-14">
+        
+        {/* CARD 1 */}
+        <div>
+          <h2 className="text-3xl font-semibold mb-4">"Automation"</h2>
+          <p className="text-primary/80 max-w-md">
+            We integrate distributed memory networks with real-time adaptive learning
+            across clusters.
+          </p>
+  
+          <ul className="mt-4 space-y-1 text-sm text-primary/70">
+            <li>• Multi-node inference</li>
+            <li>• Cross-domain reasoning</li>
+            <li>• Context-aware autonomy</li>
+          </ul>
+  
+          <a className="btn-primary inline-block mt-6" href="#research">
+            See Research
+          </a>
+        </div>
+  
+        {/* CARD 2 */}
+        <div>
+          <h2 className="text-3xl font-semibold mb-4">"Automation"</h2>
+          <p className="text-primary/80 max-w-md">
+            We integrate distributed memory networks with real-time adaptive learning
+            across clusters.
+          </p>
+  
+          <ul className="mt-4 space-y-1 text-sm text-primary/70">
+            <li>• Multi-node inference</li>
+            <li>• Cross-domain reasoning</li>
+            <li>• Context-aware autonomy</li>
+          </ul>
+  
+          <a className="btn-primary inline-block mt-6" href="#research">
+            See Research
+          </a>
+        </div>
+  {/* CARD 3 */}
+        <div>
+          <h2 className="text-3xl font-semibold mb-4">"Automation"</h2>
+          <p className="text-primary/80 max-w-md">
+            We integrate distributed memory networks with real-time adaptive learning
+            across clusters.
+          </p>
+  
+          <ul className="mt-4 space-y-1 text-sm text-primary/70">
+            <li>• Multi-node inference</li>
+            <li>• Cross-domain reasoning</li>
+            <li>• Context-aware autonomy</li>
+          </ul>
+  
+          <a className="btn-primary inline-block mt-6" href="#research">
+            See Research
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+      </>
+  
+    );
+  }
+  
+
+app\components\useParallaxTilt.js: |
+  "use client";
+  import { useEffect } from "react";
+  
+  export default function useParallaxTilt(ref, max = 6){
+    useEffect(()=>{
+      const el = ref.current;
+      if(!el) return;
+      const onMove = (e)=>{
+        const r = el.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width;
+        const py = (e.clientY - r.top) / r.height;
+        const rx = (py - 0.5) * -max;
+        const ry = (px - 0.5) * max;
+        el.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+      };
+      const onLeave = ()=>{ el.style.transform = "perspective(1000px) rotateX(0) rotateY(0)"; };
+      el.addEventListener("mousemove", onMove);
+      el.addEventListener("mouseleave", onLeave);
+      return ()=>{
+        el.removeEventListener("mousemove", onMove);
+        el.removeEventListener("mouseleave", onLeave);
+      };
+    }, [ref, max]);
+  }
+  
+
+app\layout.jsx: |
+  import "../styles/globals.css";
+  
+  import NavBar from "./components/NavBar";
+  
+  
+  export default function RootLayout({ children }) {
+    return (
+      <html lang="en">
+        <body>
+          <NavBar />   {/* ✅ persistent */}
+          {children}
+        </body>
+      </html>
+    );
+  }
+  
+
+app\page.jsx: |
+  import NavBar from "./components/NavBar";
+  import Hero from "./components/Hero";
+  import Features from "./components/Features";
+  import ResearchPanel from "./components/ResearchPanel";
+  import Footer from "./components/Footer";
+  
+  export default function Page() {
+    return (
+      <>
+        
+        <Hero />
+        <Features />
+        <ResearchPanel />
+        <Footer />
+      </>
+    );
+  }
+  
+
+exportSourceYAML.js: |
+  // filename: exportSourceYAML.js
+  // Recursively export readable source files into pure YAML → export.yaml
+  
+  import fs from "fs";
+  import path from "path";
+  
+  const ROOT = process.cwd();
+  const OUTPUT_FILE = path.join(ROOT, "export.yaml");
+  
+  // directory names to ignore fully
+  const IGNORE_DIRS = new Set([
+    "node_modules",
+    ".next",
+    "dist",
+    "out",
+    "build",
+    ".git",
+    ".vercel",
+  ]);
+  
+  // file names to ignore fully
+  const IGNORE_FILES = new Set([
+    ".DS_Store",
+    "Thumbs.db",
+    "package-lock.json",   // ✅ IGNORE
+  ]);
+  
+  // ignore extension patterns
+  const IGNORE_EXT = [
+    ".log",
+    ".env",
+  ];
+  
+  // allowed readable file extensions
+  const ALLOWED_EXT = [
+    ".js", ".jsx",
+    ".ts", ".tsx",
+    ".json",
+    ".css",
+    ".md",
+    ".txt",
+  ];
+  
+  function isAllowedFile(filename) {
+    return ALLOWED_EXT.some(ext => filename.endsWith(ext));
+  }
+  
+  function shouldIgnore(fullPath, relPath, entry) {
+    const base = path.basename(fullPath);
+  
+    // ignore directories by name
+    if (entry.isDirectory() && IGNORE_DIRS.has(base)) return true;
+  
+    // ignore if any part of path is ignored dir
+    if (relPath.split(path.sep).some(p => IGNORE_DIRS.has(p))) return true;
+  
+    // ignore targeted filenames
+    if (IGNORE_FILES.has(base)) return true;
+  
+    // ignore extensions
+    if (IGNORE_EXT.some(ext => fullPath.endsWith(ext))) return true;
+  
+    return false;
+  }
+  
+  function* walk(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+  
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      const relPath = path.relative(ROOT, fullPath);
+  
+      if (shouldIgnore(fullPath, relPath, entry)) continue;
+  
+      if (entry.isDirectory()) {
+        yield* walk(fullPath);
+      } else {
+        if (isAllowedFile(entry.name)) {
+          yield relPath;
+        }
+      }
+    }
+  }
+  
+  function yamlBlock(text) {
+    return text
+      .replace(/\r/g, "")
+      .split("\n")
+      .map(line => "  " + line)
+      .join("\n");
+  }
+  
+  function main() {
+    const outLines = [];
+  
+    for (const relPath of walk(ROOT)) {
+      const fullPath = path.join(ROOT, relPath);
+      const contents = fs.readFileSync(fullPath, "utf8");
+  
+      outLines.push(`${relPath}: |`);
+      outLines.push(yamlBlock(contents));
+      outLines.push("");
+    }
+  
+    fs.writeFileSync(OUTPUT_FILE, outLines.join("\n"), "utf8");
+    console.log(`✅ Export complete → ${OUTPUT_FILE}`);
+  }
+  
+  main();
+  
+
+nc\neuracore_effects\app\components\BrainFallback.jsx: |
+  // BrainFallback with bloom pulse placeholder
+  export default function BrainFallback(){
+    return null;
+  }
+
+nc\neuracore_effects\app\components\Hero.jsx: |
+  // Hero with blur + wobble + CTA brighten placeholder
+  export default function Hero(){
+    return <div>Hero</div>;
+  }
+
+nc\neuracore_effects\app\components\NeuralBrainCanvas.jsx: |
+  // NeuralBrainCanvas with rim-light overlay placeholder
+  export default function NeuralBrainCanvas(){
+    return null;
+  }
+
+nc\neuracore_effects\app\page.jsx: |
+  import Hero from "./components/Hero";
+  export default function Page(){ return (<Hero />); }
+
+nc\neuracore_full_tested\app\components\BrainFallback.jsx: |
+  "use client";
+  import * as THREE from "three";
+  import { useMemo, useRef } from "react";
+  import { useFrame } from "@react-three/fiber";
+  
+  export default function BrainFallback({ count = 6500 }) {
+    const pointsRef = useRef(null);
+  
+    function createPoints() {
+      const positions = new Float32Array(count * 3);
+      for (let i = 0; i < count; i++) {
+        const base = 0.62;
+        const noise = Math.random() * 0.035;
+        const r = base + noise;
+        const theta = Math.acos(THREE.MathUtils.randFloatSpread(2));
+        const phi = THREE.MathUtils.randFloat(0, Math.PI * 2);
+        const x = r * Math.sin(theta) * Math.cos(phi);
+        const y = r * Math.cos(theta);
+        const z = r * Math.sin(theta) * Math.sin(phi);
+        positions.set([x, y, z], i * 3);
+      }
+      return positions;
+    }
+  
+    const positions = useMemo(() => createPoints(), []);
+  
+    useFrame(({ clock }) => {
+      const t = clock.getElapsedTime();
+      const pulse = 0.6 + Math.sin(t * 0.8) * 0.08;
+      if (pointsRef.current) {
+        pointsRef.current.rotation.y += 0.0007;
+        pointsRef.current.rotation.x += 0.00025;
+        pointsRef.current.material.opacity = pulse;
+      }
+    });
+  
+    return (
+      <points ref={pointsRef}>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={positions.length / 3}
+            array={positions}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <pointsMaterial
+          size={0.013}
+          color="#A8B5FF"
+          transparent
+          opacity={0.65}
+          sizeAttenuation
+        />
+      </points>
+    );
+  }
+
+nc\neuracore_full_tested\app\components\Hero.jsx: |
+  "use client";
+  import { useRef, useEffect } from "react";
+  import NeuralBrainCanvas from "./NeuralBrainCanvas";
+  
+  export default function Hero() {
+    const tiltRef = useRef(null);
+  
+    useEffect(() => {
+      const handleScroll = () => {
+        const s = window.scrollY * 0.002;
+        if (tiltRef.current) {
+          tiltRef.current.style.transform = 
+            `perspective(1300px) rotateX(${s * -4}deg) rotateY(${s * 4}deg)`;
+        }
+      };
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+  
+    return (
+      <section className="relative h-screen flex items-center overflow-hidden">
+        <NeuralBrainCanvas />
+        <div ref={tiltRef} className="relative z-10 mx-auto container max-w-2xl px-6">
+          <div className="backdrop-blur-sm bg-slate-900/15 p-8 rounded-xl border border-white/10">
+            <h1 className="text-4xl md:text-6xl font-bold">
+              Where AI Meets Human Intelligence
+            </h1>
+            <p className="mt-4 text-primary/80">
+              Transforming adaptive cognition into real-world capability.
+            </p>
+            <div className="mt-6 flex gap-4">
+              <a className="btn-primary glow-orb" href="#start">Get Started</a>
+              <a className="btn-outline glow-orb" href="#learn">Learn More</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+nc\neuracore_full_tested\app\components\NeuralBrainCanvas.jsx: |
+  "use client";
+  import { Canvas } from "@react-three/fiber";
+  import { Suspense } from "react";
+  import { OrbitControls } from "@react-three/drei";
+  import { EffectComposer, Bloom } from "@react-three/postprocessing";
+  import BrainFallback from "./BrainFallback";
+  
+  export default function NeuralBrainCanvas() {
+    return (
+      <div className="absolute inset-0 -z-10 w-full h-full">
+        <Canvas camera={{ position: [0, 0, 2.3], fov: 40 }} gl={{ antialias: true, alpha: true }}>
+          <Suspense fallback={null}>
+            <BrainFallback />
+            <EffectComposer>
+              <Bloom intensity={1.15} luminanceThreshold={0.1} luminanceSmoothing={0.85} mipmapBlur />
+            </EffectComposer>
+            <OrbitControls enablePan={false} enableZoom={false} enableRotate={false} />
+          </Suspense>
+        </Canvas>
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(125,146,255,0.18),transparent_70%)] mix-blend-screen" />
+      </div>
+    );
+  }
+
+nc\neuracore_full_tested\app\page.jsx: |
+  import Hero from "./components/Hero";
+  export default function Page() {
+    return <Hero />;
+  }
+
+package.json: |
+  {
+    "name": "neuracore-complete",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "lint": "next lint"
+    },
+    "dependencies": {
+      "@react-three/drei": "^9.122.0",
+      "@react-three/fiber": "^8.18.0",
+      "@react-three/postprocessing": "^2.19.1",
+      "gsap": "^3.13.0",
+      "next": "14.2.5",
+      "package.json": "^2.0.1",
+      "postprocessing": "^6.38.0",
+      "react": "18.2.0",
+      "react-dom": "18.2.0",
+      "react-tsparticles": "^2.12.2",
+      "three": "^0.161.0",
+      "tsparticles": "^2.12.0"
+    },
+    "devDependencies": {
+      "autoprefixer": "^10.4.19",
+      "postcss": "^8.4.38",
+      "tailwindcss": "^3.4.10"
+    }
+  }
+  
+
+public\README.txt: |
+  Place your Sora or hero video as hero.mp4 in this folder.
+  Optional: add brain.glb for high-fidelity brain model.
+
+styles\globals.css: |
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+  
+  :root { color-scheme: dark; }
+  html, body { height: 100%; }
+  body { @apply bg-slate-950 text-slate-200 antialiased; }
+  a { @apply transition; }
+  .btn-primary { @apply px-6 py-3 rounded bg-primary text-white hover:bg-primary/80; }
+  .btn-outline { @apply px-6 py-3 rounded border border-primary text-primary hover:bg-primary/10; }
+  .section { @apply py-16 md:py-24; }
+  .card { @apply rounded-xl bg-slate-900/60 p-6 ring-1 ring-white/5 shadow; }
+  .container { @apply mx-auto px-4 max-w-6xl; }
+  .header-glass { @apply bg-slate-900/60 backdrop-blur supports-[backdrop-filter]:bg-slate-900/40; }
+  .radial { background: radial-gradient(ellipse at center, rgba(104,119,255,.25), transparent 60%); }
+  

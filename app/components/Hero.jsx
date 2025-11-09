@@ -91,10 +91,12 @@ export default function Hero() {
   };
 
   return (
-    <section
-      ref={containerRef}
-      className="relative h-screen flex items-center overflow-hidden px-4"
-    >
+<section
+  id="platform"   // ✅ match your navbar href
+  ref={containerRef}
+  className="relative h-screen flex items-center overflow-hidden px-4"
+>
+
       {/* BACKGROUND PARTICLES */}
       <NeuralParticles />
 

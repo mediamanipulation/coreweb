@@ -1,14 +1,15 @@
-import "./../styles/globals.css";
+import "../styles/globals.css";
 
-export const metadata = {
-  title: "NeuraCore AI",
-  description: "Where AI meets human intelligence."
-};
+import NavBar from "./components/NavBar";
+
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <NavBar />   {/* ✅ persistent */}
+        {children}
+      </body>
     </html>
   );
 }
